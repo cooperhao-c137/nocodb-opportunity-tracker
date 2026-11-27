@@ -1,0 +1,21 @@
+name: NocoDB startup check
+on:
+  push:
+    paths:
+      - compose.yaml
+      - .github/workflows/smoke.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  startup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose up -d --wait --wait-timeout 180
+      - run: curl --fail --show-error --silent http://127.0.0.1:8080/api/v1/health
+      - if: failure()
+        run: docker compose logs --no-color
+      - if: always()
+        run: docker compose down --volumes
