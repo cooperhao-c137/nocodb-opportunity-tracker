@@ -1,0 +1,1 @@
+# nocodb-opportunity-tracker
